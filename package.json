@@ -3,14 +3,18 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "npm run serve",
+    "start": "npm run generate:env-vars && npm run serve",
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "npm run generate:env-vars && vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "test": "npm run lint"
+    "test": "npm run lint",
+    "generate:env-vars": "node generate-env-vars.js"
   },
   "dependencies": {
+    "axios": "^0.20.0",
+    "classnames": "^2.2.6",
     "core-js": "^3.6.5",
+    "envkey": "^1.2.8",
     "vue": "^2.6.12",
     "vue-router": "^3.4.3",
     "vuex": "^3.5.1"
@@ -22,6 +26,8 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
+    "sass": "^1.26.11",
+    "sass-loader": "^10.0.2",
     "vue-template-compiler": "^2.6.12"
   },
   "browserslist": [

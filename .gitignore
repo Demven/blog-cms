@@ -9,3 +9,6 @@ npm-debug.log*
 
 # Editor directories and files
 .idea
+
+
+src/env/index.js
