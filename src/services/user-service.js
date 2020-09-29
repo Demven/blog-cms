@@ -9,8 +9,6 @@ if (typeof window !== 'undefined') {
 }
 
 function login (name, password) {
-  console.info('process.env.API_HOST', env.API_HOST);
-
   return axios
     .post(`${env.API_HOST}/api/v1/user/login`, { name, password })
     .then(response => {
