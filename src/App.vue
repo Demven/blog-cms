@@ -13,6 +13,7 @@ export default {
 <style lang="scss">
   @import './styles/fonts';
   @import './styles/colors';
+  @import './styles/vendor/rainbow-theme-solarized-light';
 
   html {
     font-size: 10px;

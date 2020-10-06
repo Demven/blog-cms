@@ -79,7 +79,7 @@
           .login(this.username, this.password)
           .then(response => {
             if (response.status === 200) {
-              this.$router.push('/homepage/edit');
+              this.$router.push('/homepage');
             } else {
               this.toastEventBus.$emit('message', response.data);
             }

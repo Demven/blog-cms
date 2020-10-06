@@ -32,8 +32,6 @@
     },
     methods: {
       onMessage (message) {
-        console.info('message', message);
-
         if (message) {
           this.message = message;
           this.visible = true;

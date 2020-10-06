@@ -55,6 +55,7 @@
 
   @mixin edit-nav-button {
     -webkit-appearance: none;
+    appearance: none;
     padding: 12px 20px;
     border-radius: 4px;
     border: 0;

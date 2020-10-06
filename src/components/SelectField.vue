@@ -1,39 +1,31 @@
 <template>
-  <div :class="className">
+  <div :class="className" v-if="values && values.length">
     <label
-      class="AutoComplete__label"
-      :for="name"
+       class="SelectField__label"
+       :for="name"
     >
       {{label}}
     </label>
 
-    <input
-      class="AutoComplete__field"
-      :id="name"
-      :placeholder="placeholder"
-      :required="required"
-      @focus="onFocus"
-      @keyup="onKeyUp"
-      @blur="onBlur"
-      :value="value"
-    />
-
-    <ul
-      class="AutoComplete__list"
-      v-if="items.length"
+    <div
+       class="SelectField__field"
+       @click="openList"
+       tabindex="0"
     >
+      {{values && values.length && values[selectedIndex].text}}
+    </div>
+
+    <ul class="SelectField__list">
       <li
-         class="AutoComplete__item"
-         v-for="(item, index) in items"
-         :key="item.value"
+         class="SelectField__item"
+         v-for="(itemValue, index) in values"
+         :key="index"
          :data-index="index"
          @click="onSelect"
-      >
-        {{item.text}}
-      </li>
+      >{{itemValue.text}}</li>
     </ul>
 
-    <div class="TextField__error">{{errorText}}</div>
+    <div class="SelectField__error">{{errorText}}</div>
   </div>
 </template>
 
@@ -41,53 +33,34 @@
   import classNames from 'classnames';
 
   export default {
-    name: 'AutoComplete',
+    name: 'SelectField',
     props: {
       name: String,
       label: String,
-      value: String,
-      items: Array,
-      placeholder: String,
-      required: Boolean,
+      selectedIndex: Number,
+      values: Array,
       errorText: String,
     },
     data () {
       return {
         open: false,
         EVENT: {
-          FOCUS: 'focus',
-          CHANGE: 'change',
-          BLUR: 'blur',
           SELECT: 'select',
-          ENTER: 'enter',
         },
       };
     },
     computed: {
       className() {
-        return classNames('AutoComplete', {
-          'AutoComplete--open': this.open,
-          'AutoComplete--with-error': this.errorText,
+        return classNames('SelectField', {
+          'SelectField--open': this.open,
+          'SelectField--with-error': this.errorText,
         });
       },
     },
     methods: {
-      onFocus(event) {
-        this.$emit(this.EVENT.FOCUS, event);
-      },
+      openList (event) {
+        event.stopPropagation();
 
-      onSelect (event) {
-        const selectedIndex = event.target.dataset.index;
-
-        this.$emit(this.EVENT.SELECT, { name: this.name, selectedIndex });
-        this.closeList();
-      },
-
-      onBlur (event) {
-        this.$emit(this.EVENT.BLUR, event);
-      },
-
-      openList () {
         this.open = true;
 
         window.document.addEventListener('keyup', this.onKeyUp);
@@ -101,29 +74,18 @@
         window.document.removeEventListener('click', this.onOuterClick);
       },
 
-      onKeyUp(event) {
-        const value = event.target.value;
-
+      onKeyUp (event) {
         if (event.key === 'Escape') {
           this.closeList();
-          return;
         }
+      },
 
-        if (event.key === 'Enter') {
-          this.closeList();
-          this.$emit(this.EVENT.ENTER, { name: this.name, value });
-          return;
-        }
+      onSelect (event) {
+        const selectedIndex = event.target.dataset.index;
 
-        if (this.name) {
-          if (value.trim()) {
-            this.openList();
-          } else {
-            this.closeList();
-          }
+        this.$emit(this.EVENT.SELECT, { name: this.name, selectedIndex });
 
-          this.$emit(this.EVENT.CHANGE, { name: this.name, value });
-        }
+        this.closeList();
       },
 
       onOuterClick () {
@@ -138,7 +100,7 @@
   @import '../styles/media';
   @import '../styles/typography';
 
-  $componentName: 'AutoComplete';
+  $componentName: 'SelectField';
 
   .#{$componentName} {
     width: 350px;
@@ -157,25 +119,36 @@
     }
 
     &__field {
-      -webkit-appearance: none;
-      appearance: none;
       width: 100%;
       padding: 8px 10px 8px 0;
-      outline: none;
+      position: relative;
       font-family: $font-dincyr-regular;
       font-size: 16px;
-      border: 0;
+      text-transform: capitalize;
       border-bottom: 1px solid $color-dark-grey;
       color: $color-black-darker;
       transition: border-color 0.3s;
       box-sizing: border-box;
+      cursor: pointer;
 
       &:focus {
+        outline: none;
         border-bottom: 2px solid $color-aquamarine;
       }
 
-      &::placeholder {
-        color: $color-dark-grey;
+      &:after {
+        content: '';
+        display: block;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 6px solid $color-grey;
+        position: absolute;
+        top: 50%;
+        right: 0;
+      }
+
+      &:hover:after {
+        border-top-color: $color-dark-grey;
       }
 
       .#{$componentName}--with-error & {
@@ -190,7 +163,7 @@
       padding: 10px 0;
       margin: 0;
       position: absolute;
-      top: 61px;
+      top: 30px;
       list-style: none;
       background: $color-white;
       box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.1);

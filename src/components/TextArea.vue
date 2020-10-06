@@ -1,25 +1,26 @@
 <template>
   <div :class="className">
     <label
-      class="TextField__label"
-      :for="name"
+       class="TextArea__label"
+       :for="name"
+       v-if="label"
     >
       {{label}}
     </label>
 
-    <input
-      class="TextField__field"
+    <textarea-autosize
+      class="TextArea__field"
       :id="name"
-      :type="type"
       :placeholder="placeholder"
+      :rows="rows"
       :required="required"
       @focus="onFocus"
-      @keyup="onKeyUp"
+      @input="onInput"
       @blur="onBlur"
-      :value="value"
-    />
+      v-model="value"
+    ></textarea-autosize>
 
-    <div class="TextField__error">{{errorText}}</div>
+    <div class="TextArea__error">{{errorText}}</div>
   </div>
 </template>
 
@@ -27,31 +28,30 @@
   import classNames from 'classnames';
 
   export default {
-    name: 'TextField',
+    name: 'TextArea',
     props: {
       name: String,
       label: String,
-      value: String,
+      rows: Number,
+      initialValue: String,
       placeholder: String,
       required: Boolean,
-      typePassword: Boolean,
       errorText: String,
     },
     data () {
       return {
-        type: this.typePassword ? 'password' : 'text',
+        value: this.initialValue,
         EVENT: {
           FOCUS: 'focus',
           CHANGE: 'change',
-          ENTER_KEY: 'enter-key',
           BLUR: 'blur',
         },
       };
     },
     computed: {
       className () {
-        return classNames('TextField', {
-          'TextField--with-error': this.errorText,
+        return classNames('TextArea', {
+          'TextArea--with-error': this.errorText,
         });
       },
     },
@@ -60,15 +60,9 @@
         this.$emit(this.EVENT.FOCUS, event);
       },
 
-      onKeyUp (event) {
-        const value = event.target.value;
-
+      onInput () {
         if (this.name) {
-          this.$emit(this.EVENT.CHANGE, { name: this.name, value });
-        }
-
-        if (event.key === 'Enter') {
-          this.$emit(this.EVENT.ENTER_KEY, this.name);
+          this.$emit(this.EVENT.CHANGE, { name: this.name, value: this.value });
         }
       },
 
@@ -84,11 +78,12 @@
   @import '../styles/media';
   @import '../styles/typography';
 
-  $componentName: 'TextField';
+  $componentName: 'TextArea';
 
   .#{$componentName} {
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
 
     &__label {
       font-family: $font-dincyr-bold;
@@ -104,6 +99,7 @@
       -webkit-appearance: none;
       appearance: none;
       width: 100%;
+      max-width: 100%;
       padding: 8px 10px 8px 0;
       outline: none;
       font-family: $font-dincyr-regular;
@@ -133,10 +129,10 @@
       font-family: $font-dincyr-regular;
       font-size: 12px;
       color: $color-red;
-    }
 
-    .#{$componentName}--with-error & {
-      display: block;
+      .#{$componentName}--with-error & {
+        display: block;
+      }
     }
   }
 </style>

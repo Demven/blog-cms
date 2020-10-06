@@ -2,17 +2,38 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
+import ArticlePage from './pages/ArticlePage';
 import clientStorage, { STORAGE_KEY } from './services/client-storage';
 import userService from './services/user-service';
 
 Vue.use(VueRouter);
+
+function protectRoute (optionalRedirect) {
+  return (to, from, next) => {
+    const token = clientStorage.get(STORAGE_KEY.AUTH_TOKEN);
+
+    if (!token) return next();
+
+    return userService.validateToken(token)
+      .then(valid => {
+        if (!valid) {
+          next('/logout');
+        }
+
+        next(optionalRedirect);
+      })
+      .catch(() => {
+        next('/logout');
+      });
+  };
+}
 
 const router = new VueRouter({
   mode: 'history',
   routes: [
     {
       path: '/',
-      redirect: '/homepage/edit'
+      redirect: '/homepage'
     },
     {
       path: '/login',
@@ -20,23 +41,7 @@ const router = new VueRouter({
       meta: {
         title: 'Enter the God Mode',
       },
-      beforeEnter: (to, from, next) => {
-        const token = clientStorage.get(STORAGE_KEY.AUTH_TOKEN);
-
-        if (!token) return next();
-
-        return userService.validateToken(token)
-          .then(valid => {
-            if (!valid) {
-              next('/logout');
-            }
-
-            next('/homepage/edit');
-          })
-          .catch(() => {
-            next('/logout');
-          });
-      }
+      beforeEnter: protectRoute('/homepage'),
     },
     {
       path: '/logout',
@@ -46,28 +51,28 @@ const router = new VueRouter({
       },
     },
     {
-      path: '/homepage/edit',
+      path: '/homepage',
       component: HomePage,
       meta: {
         title: 'Edit Home page',
       },
-      beforeEnter: (to, from, next) => {
-        const token = clientStorage.get(STORAGE_KEY.AUTH_TOKEN);
-
-        if (!token) return next('/login');
-
-        return userService.validateToken(token)
-          .then(valid => {
-            if (!valid) {
-              next('/logout');
-            }
-
-            next();
-          })
-          .catch(() => {
-            next('/logout');
-          });
-      }
+      beforeEnter: protectRoute(),
+    },
+    {
+      path: '/article',
+      component: ArticlePage,
+      meta: {
+        title: 'Create an article',
+      },
+      beforeEnter: protectRoute(),
+    },
+    {
+      path: '/article/:slug',
+      component: ArticlePage,
+      meta: {
+        title: 'Edit an article',
+      },
+      beforeEnter: protectRoute(),
     },
   ]
 });
