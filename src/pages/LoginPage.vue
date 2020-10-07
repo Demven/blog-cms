@@ -90,7 +90,7 @@
       },
 
       onModalClose () {
-        window.location.href = env.BLOG_HOST;
+        window.location.href = env.WWW_HOST;
       }
     }
   };

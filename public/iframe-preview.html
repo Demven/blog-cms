@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>iframe preview</title>
+</head>
+<body>
+  <script>
+    const STORAGE_KEY = {
+      ARTICLE_DATA: 'ARTICLE_DATA',
+      HOMEPAGE_DATA: 'HOMEPAGE_DATA',
+    };
+
+    window.addEventListener('message', onMessage, false);
+
+    function onMessage (event) {
+      if (event.data.pageType === 'homepage') {
+        event.source.postMessage({
+          homepage: getData(STORAGE_KEY.HOMEPAGE_DATA),
+        }, '*');
+      } else if (event.data.pageType === 'article') {
+        event.source.postMessage({
+          article: getData(STORAGE_KEY.ARTICLE_DATA),
+        }, '*');
+      }
+    }
+
+    function getData(key) {
+      let valueToReturn;
+      const stringValue = window.localStorage.getItem(key);
+
+      try {
+        valueToReturn = JSON.parse(stringValue);
+      } catch (error) {
+        valueToReturn = stringValue;
+      }
+
+      return valueToReturn;
+    }
+  </script>
+</body>
+</html>

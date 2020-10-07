@@ -128,7 +128,7 @@
 
       onPreview () {
         clientStorage.save(STORAGE_KEY.HOMEPAGE_DATA, this.sections);
-        window.open(`${env.BLOG_HOST}/homepage/preview`, '_blank');
+        window.open(`${env.WWW_HOST}/homepage/preview`, '_blank');
       },
     }
   };

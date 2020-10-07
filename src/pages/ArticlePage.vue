@@ -387,7 +387,7 @@
 
       onPreview () {
         clientStorage.save(STORAGE_KEY.ARTICLE_DATA, this.article);
-        window.open(`${env.BLOG_HOST}/article/preview`, '_blank');
+        window.open(`${env.WWW_HOST}/article/preview`, '_blank');
       },
     }
   };

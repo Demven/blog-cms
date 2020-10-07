@@ -8,8 +8,8 @@ const envConfigFile = `
 export const env = {
   NODE_ENV: '${process.env.NODE_ENV}',
   WWW_HOST: '${process.env.WWW_HOST}',
+  CMS_HOST: '${process.env.CMS_HOST}',
   API_HOST: '${process.env.API_HOST}',
-  BLOG_HOST: '${process.env.BLOG_HOST}',
 };
 `;
 
