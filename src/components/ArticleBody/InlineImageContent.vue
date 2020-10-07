@@ -102,7 +102,7 @@
     data () {
       return {
         editMode: false,
-        url: '',
+        url: this.content.url || '',
         description: '',
         credits: '',
         EVENT: {
