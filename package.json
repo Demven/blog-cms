@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "npm run generate:env-vars && npm run serve",
-    "serve": "vue-cli-service serve",
+    "dev": "npm run generate:env-vars && vue-cli-service serve",
+    "start": "node server.js",
     "build": "npm run generate:env-vars && vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test": "npm run lint",
@@ -13,8 +13,10 @@
   "dependencies": {
     "axios": "^0.20.0",
     "classnames": "^2.2.6",
+    "connect-history-api-fallback": "^1.6.0",
     "core-js": "^3.6.5",
     "envkey": "^1.2.8",
+    "express": "^4.17.1",
     "moment": "^2.29.0",
     "vue": "^2.6.12",
     "vue-router": "^3.4.3",
