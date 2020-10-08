@@ -39,5 +39,8 @@
     "last 2 versions",
     "not dead"
   ],
+  "engines": {
+    "node": "12.x"
+  },
   "heroku-run-build-script": true
 }
