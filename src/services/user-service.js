@@ -10,7 +10,7 @@ if (typeof window !== 'undefined') {
 
 function login (name, password) {
   return axios
-    .post(`${env.API_HOST}/api/v1/user/login`, { name, password })
+    .post(`${env.API_HOST}/v1/user/login`, { name, password })
     .then(response => {
       if (response.status === 200 && response.data.token) {
         clientStorage.save(STORAGE_KEY.AUTH_TOKEN, response.data.token);
@@ -34,7 +34,7 @@ function isLoggedIn () {
 
 function validateToken (token) {
   return axios
-    .post(`${env.API_HOST}/api/v1/user/validate`, { token })
+    .post(`${env.API_HOST}/v1/user/validate`, { token })
     .then(response => {
       return response.status === 200;
     })

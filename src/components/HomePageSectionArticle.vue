@@ -161,7 +161,7 @@
 
       fetchSuggestedArticles (titleInput) {
         return axios
-          .get(`${env.API_HOST}/api/v1/category/${this.category.slug}/articles?title=${titleInput}&limit=5`)
+          .get(`${env.API_HOST}/v1/category/${this.category.slug}/articles?title=${titleInput}&limit=5`)
           .then(response => {
             if (response.status === 200) {
               this.processSuggestedArticles(response.data);

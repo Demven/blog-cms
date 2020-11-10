@@ -63,7 +63,7 @@
     methods: {
       fetchHomePageSections () {
         return axios
-          .get(`${env.API_HOST}/api/v1/homepage-section`)
+          .get(`${env.API_HOST}/v1/homepage-section`)
           .then(response => {
             if (response.status === 200) {
               this.sections = response.data;
@@ -94,7 +94,7 @@
         const updateHomepageSectionsRequests = this.sections
           .map((section) => {
             return axios.post(
-              `${env.API_HOST}/api/v1/homepage-section`,
+              `${env.API_HOST}/v1/homepage-section`,
               section,
               {
                 headers: { Authorization: `Bearer ${token}` }
