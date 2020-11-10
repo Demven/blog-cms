@@ -196,7 +196,7 @@
     methods: {
       fetchArticle() {
         return axios
-          .get(`${env.API_HOST}/api/v1/article/${this.slug}?ignore=pageview`)
+          .get(`${env.API_HOST}/v1/article/${this.slug}?ignore=pageview`)
           .then(response => {
             if (response.status === 200) {
               this.article = response.data;
@@ -216,7 +216,7 @@
 
       fetchCategories () {
         return axios
-          .get(`${env.API_HOST}/api/v1/category`)
+          .get(`${env.API_HOST}/v1/category`)
           .then(response => {
             if (response.status === 200) {
               const categories = response.data;
@@ -243,7 +243,7 @@
 
       fetchSuggestedKeywords (keywordFragment) {
         return axios
-          .get(`${env.API_HOST}/api/v1/keyword?search=${encodeURIComponent(keywordFragment)}&limit=5`)
+          .get(`${env.API_HOST}/v1/keyword?search=${encodeURIComponent(keywordFragment)}&limit=5`)
           .then(response => {
             if (response.status === 200) {
               const keywords = response.data;
@@ -312,7 +312,7 @@
           const token = clientStorage.get(STORAGE_KEY.AUTH_TOKEN);
           axios
             .post(
-              `${env.API_HOST}/api/v1/keyword`,
+              `${env.API_HOST}/v1/keyword`,
               { keyword: value },
               { headers: { Authorization: `Bearer ${token}` } }
             )
@@ -358,7 +358,7 @@
         const token = clientStorage.get(STORAGE_KEY.AUTH_TOKEN);
 
         axios.post(
-            `${env.API_HOST}/api/v1/article`,
+            `${env.API_HOST}/v1/article`,
             this.article,
             { headers: { Authorization: `Bearer ${token}` } }
           )
