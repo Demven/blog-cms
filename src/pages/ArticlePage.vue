@@ -2,9 +2,9 @@
   <div class="ArticlePage">
     <SvgSprite></SvgSprite>
     <Nav
-       :title="article.title"
-       @publish="onPublish"
-       @preview="onPreview"
+      :title="article.title"
+      @publish="onPublish"
+      @preview="onPreview"
     ></Nav>
 
     <div class="ArticlePage__main">
@@ -358,10 +358,10 @@
         const token = clientStorage.get(STORAGE_KEY.AUTH_TOKEN);
 
         axios.post(
-            `${env.API_HOST}/v1/article`,
-            this.article,
-            { headers: { Authorization: `Bearer ${token}` } }
-          )
+          `${env.API_HOST}/v1/article`,
+          this.article,
+          { headers: { Authorization: `Bearer ${token}` } }
+        )
           .then(response => {
             if (response.status === 200) {
               console.info('successfully published', response.data);
