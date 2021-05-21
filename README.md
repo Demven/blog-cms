@@ -2,8 +2,12 @@
 
 ## Project setup
 ```
+nvm use 14.7
 npm install
+npm run dev
 ```
+
+Run API locally and then open http://cms.dmitry-salnikov.info:8080
 
 ### Compiles and hot-reloads for development
 ```
@@ -19,6 +23,3 @@ npm run build
 ```
 npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
