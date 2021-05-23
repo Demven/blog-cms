@@ -161,7 +161,14 @@
       onVideoTypeChange({ name, selectedIndex }) {
         if (name === 'type') {
           this.selectedVideoTypeIndex = selectedIndex;
-          this.content.videoType = this.VIDEO_TYPES[selectedIndex].value;
+
+          this.$emit(this.EVENT.UPDATE, {
+            index: this.index,
+            content: {
+              ...this.content,
+              videoType: this.VIDEO_TYPES[selectedIndex].value,
+            },
+          });
         }
       },
 
@@ -176,7 +183,13 @@
           this[name] = value;
 
           if (value === '') {
-            this.content[name] = value;
+            this.$emit(this.EVENT.UPDATE, {
+              index: this.index,
+              content: {
+                ...this.content,
+                [name]: value,
+              },
+            });
           }
         }
       },

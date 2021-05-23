@@ -134,7 +134,13 @@
           this[name] = value;
 
           if (value === '') {
-            this.content[name] = value;
+            this.$emit(this.EVENT.UPDATE, {
+              index: this.index,
+              content: {
+                ...this.content,
+                [name]: value,
+              }
+            });
           }
         }
       },
