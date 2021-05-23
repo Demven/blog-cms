@@ -12,4 +12,4 @@ if (env.NODE_ENV !== 'development' && typeof window !== 'undefined') {
 
 Vue.use(TextareaAutosize);
 
-createApp(App).use(router).mount('#app');
+createApp(App).use(router).use(router).mount('#app');
