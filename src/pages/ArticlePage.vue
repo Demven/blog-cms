@@ -106,7 +106,7 @@
 </template>
 
 <script>
-  import Vue from 'vue';
+  import emitter from 'mitt';
   import axios from 'axios';
   import SvgSprite from '../components/SvgSprite.vue';
   import Nav from '../components/Nav.vue';
@@ -172,7 +172,7 @@
         keyword: '',
         suggestedKeywords: [],
         createMode: false,
-        toastEventBus: new Vue(),
+        toastEventBus: emitter(),
         ICON_CLOSE: ICON.CLOSE,
       };
     },
@@ -206,7 +206,7 @@
               console.info('article data', this.article);
             } else {
               console.error('Could not get article data', response);
-              this.toastEventBus.$emit('message', 'Could not get article data');
+              this.toastEventBus.emit('message', 'Could not get article data');
             }
           })
           .catch(error => {
@@ -233,7 +233,7 @@
               }
             } else {
               console.error('Could not get categories data', response);
-              this.toastEventBus.$emit('message', 'Could not fetch existing categories');
+              this.toastEventBus.emit('message', 'Could not fetch existing categories');
             }
           })
           .catch(error => {
@@ -255,7 +255,7 @@
               }));
             } else {
               console.error('Could not get keywords data', response);
-              this.toastEventBus.$emit('message', 'Could not fetch suggested keywords');
+              this.toastEventBus.emit('message', 'Could not fetch suggested keywords');
             }
           })
           .catch(error => {
@@ -321,12 +321,12 @@
                 this.article.keywords.push(response.data);
                 this.keyword = '';
               } else {
-                this.toastEventBus.$emit('message', 'Failed to create keyword');
+                this.toastEventBus.emit('message', 'Failed to create keyword');
               }
             })
             .catch(error => {
               console.error('Failed to create keyword', value, error);
-              this.toastEventBus.$emit('message', 'Failed to create keyword');
+              this.toastEventBus.emit('message', 'Failed to create keyword');
             });
         }
       },
@@ -365,7 +365,7 @@
           .then(response => {
             if (response.status === 200) {
               console.info('successfully published', response.data);
-              this.toastEventBus.$emit('message', 'Successfully published');
+              this.toastEventBus.emit('message', 'Successfully published');
 
               if (this.createMode) {
                 const articleSlug = response.data.slug;
@@ -376,12 +376,12 @@
               }
             } else {
               console.error('Failed to publish', response);
-              this.toastEventBus.$emit('message', 'Failed to publish the article');
+              this.toastEventBus.emit('message', 'Failed to publish the article');
             }
           })
           .catch(error => {
             console.error(error);
-            this.toastEventBus.$emit('message', 'Failed to publish the article');
+            this.toastEventBus.emit('message', 'Failed to publish the article');
           });
       },
 

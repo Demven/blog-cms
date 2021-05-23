@@ -21,8 +21,8 @@
 </template>
 
 <script>
-  import Vue from 'vue';
   import axios from 'axios';
+  import emitter from 'mitt';
   import SvgSprite from '../components/SvgSprite.vue';
   import Nav from '../components/Nav.vue';
   import HomePageSection from '../components/HomePageSection.vue';
@@ -53,7 +53,7 @@
     },
     data () {
       return {
-        toastEventBus: new Vue(),
+        toastEventBus: emitter(),
         sections: [],
       };
     },
@@ -70,12 +70,12 @@
               console.info('homepage data', this.sections);
             } else {
               console.error('Could not get homepage sections', response);
-              this.toastEventBus.$emit('message', 'Could not get homepage data');
+              this.toastEventBus.emit('message', 'Could not get homepage data');
             }
           })
           .catch(error => {
             console.error(error);
-            this.toastEventBus.$emit('message', 'Could not get homepage data');
+            this.toastEventBus.emit('message', 'Could not get homepage data');
           });
       },
 
@@ -114,15 +114,15 @@
 
             if (isSuccessful) {
               console.info('successfully published the Homepage', results);
-              this.toastEventBus.$emit('message', 'Successfully published');
+              this.toastEventBus.emit('message', 'Successfully published');
             } else {
               console.error('Failed to publish', results);
-              this.toastEventBus.$emit('message', 'Failed to publish the Homepage');
+              this.toastEventBus.emit('message', 'Failed to publish the Homepage');
             }
           })
           .catch(error => {
             console.error(error);
-            this.toastEventBus.$emit('message', 'Failed to publish the Homepage');
+            this.toastEventBus.emit('message', 'Failed to publish the Homepage');
           });
       },
 

@@ -1,12 +1,9 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
 import ArticlePage from './pages/ArticlePage';
 import clientStorage, { STORAGE_KEY } from './services/client-storage';
 import userService from './services/user-service';
-
-Vue.use(VueRouter);
 
 function protectRoute (optionalRedirect) {
   return (to, from, next) => {
@@ -28,8 +25,8 @@ function protectRoute (optionalRedirect) {
   };
 }
 
-const router = new VueRouter({
-  mode: 'history',
+const router = createRouter({
+  history: createWebHistory(process.env.BASE_URL),
   routes: [
     {
       path: '/',
@@ -74,7 +71,7 @@ const router = new VueRouter({
       },
       beforeEnter: protectRoute(),
     },
-  ]
+  ],
 });
 
 router.beforeEach((to, from, next) => {

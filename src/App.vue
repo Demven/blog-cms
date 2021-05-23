@@ -1,16 +1,13 @@
 <template>
-  <router-view v-slot="{ Component }">
-    <transition>
-      <keep-alive>
-        <div id="nav">
-          <router-link to="/">Home</router-link> |
-          <router-link to="/about">About</router-link>
-        </div>
-
-        <component :is="Component" />
-      </keep-alive>
-    </transition>
-  </router-view>
+  <div id="app" class="app">
+    <router-view v-slot="{ Component }">
+      <transition>
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </transition>
+    </router-view>
+  </div>
 </template>
 
 <style lang="scss">

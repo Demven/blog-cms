@@ -28,7 +28,7 @@
       },
     },
     created () {
-      this.eventBus.$on('message', this.onMessage);
+      this.eventBus.on('message', this.onMessage);
     },
     methods: {
       onMessage (message) {

@@ -44,7 +44,7 @@
 </template>
 
 <script>
-  import Vue from 'vue';
+  import emitter from 'mitt';
   import Modal from '../components/Modal.vue';
   import Label from '../components/Label.vue';
   import TextField from '../components/TextField.vue';
@@ -64,7 +64,7 @@
       return {
         username: '',
         password: '',
-        toastEventBus: new Vue(),
+        toastEventBus: emitter(),
       };
     },
     methods: {
@@ -81,11 +81,11 @@
             if (response.status === 200) {
               this.$router.push('/homepage');
             } else {
-              this.toastEventBus.$emit('message', response.data);
+              this.toastEventBus.emit('message', response.data);
             }
           })
           .catch(error => {
-            this.toastEventBus.$emit('message', error.response.data);
+            this.toastEventBus.emit('message', error.response.data);
           });
       },
 
