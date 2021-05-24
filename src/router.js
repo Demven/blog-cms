@@ -1,35 +1,35 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
 import ArticlePage from './pages/ArticlePage';
 import clientStorage, { STORAGE_KEY } from './services/client-storage';
 import userService from './services/user-service';
 
-Vue.use(VueRouter);
-
 function protectRoute (optionalRedirect) {
-  return (to, from, next) => {
+  return (to) => {
     const token = clientStorage.get(STORAGE_KEY.AUTH_TOKEN);
+    const isLoginPage = to.path === '/login';
 
-    if (!token) return next();
+    if (isLoginPage) {
+      return true;
+    } else if (!token && !isLoginPage) {
+      return '/login';
+    }
 
     return userService.validateToken(token)
       .then(valid => {
-        if (!valid) {
-          next('/logout');
+        if (valid) {
+          return optionalRedirect || true;
+        } else {
+          return '/logout';
         }
-
-        next(optionalRedirect);
       })
-      .catch(() => {
-        next('/logout');
-      });
+      .catch(() => '/logout');
   };
 }
 
-const router = new VueRouter({
-  mode: 'history',
+const router = createRouter({
+  history: createWebHistory(process.env.BASE_URL),
   routes: [
     {
       path: '/',
@@ -45,9 +45,9 @@ const router = new VueRouter({
     },
     {
       path: '/logout',
-      beforeEnter: (to, from, next) => {
+      beforeEnter: () => {
         userService.logout();
-        next('/login');
+        return '/login';
       },
     },
     {
@@ -74,14 +74,10 @@ const router = new VueRouter({
       },
       beforeEnter: protectRoute(),
     },
-  ]
+  ],
 });
 
 router.beforeEach((to, from, next) => {
-  // const token = localStorage.getItem("token");
-  // if (!token && to.path !== '/login') next('/login');
-  // else next();
-
   document.title = to.meta.title || 'Dmitry Salnikov - Personal Blog';
 
   next();

@@ -131,7 +131,14 @@
       onCodeTypeChange({ name, selectedIndex }) {
         if (name === 'type') {
           this.selectedCodeTypeIndex = selectedIndex;
-          this.content.codeType = this.CODE_TYPES[selectedIndex].value;
+
+          this.$emit(this.EVENT.UPDATE, {
+            index: this.index,
+            content: {
+              ...this.content,
+              codeType: this.CODE_TYPES[selectedIndex].value,
+            },
+          });
         }
       },
 

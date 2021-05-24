@@ -1,5 +1,4 @@
-import Vue from 'vue';
-import TextareaAutosize from 'vue-textarea-autosize';
+import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import { env } from './env';
@@ -10,9 +9,6 @@ if (env.NODE_ENV !== 'development' && typeof window !== 'undefined') {
   }
 }
 
-Vue.use(TextareaAutosize);
-
-new Vue({
-  router,
-  render: h => h(App),
-}).$mount('#app');
+createApp(App)
+  .use(router)
+  .mount('#app');

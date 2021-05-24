@@ -1,13 +1,19 @@
 <template>
   <div id="app" class="app">
-    <router-view></router-view>
+    <router-view v-slot="{ Component }">
+      <transition>
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </transition>
+    </router-view>
   </div>
 </template>
 
 <script>
-export default {
-  name: 'App',
-};
+  export default {
+    name: 'App',
+  };
 </script>
 
 <style lang="scss">
