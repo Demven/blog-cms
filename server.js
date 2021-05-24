@@ -11,5 +11,5 @@ app.use(staticMiddleware);
 
 const PORT = global.parseInt(process.env.PORT, 10) || 8081;
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`CMS app listening on port ${PORT}!`);
 });
