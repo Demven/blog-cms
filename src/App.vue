@@ -10,25 +10,56 @@
   </div>
 </template>
 
+<script>
+  export default {
+    name: 'App',
+  };
+</script>
+
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+  @import './styles/fonts';
+  @import './styles/colors';
+  @import './styles/vendor/rainbow-theme-solarized-light';
 
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+  html {
+    font-size: 10px;
+    padding: 0;
+    margin: 0;
   }
-}
+
+  body {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  p,
+  figure {
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
+  }
+
+  *::selection {
+    color: $color-white;
+    background: $color-aquamarine;
+  }
+
+  input::-webkit-input-placeholder { color: currentColor; }
+  input::-moz-placeholder { color: currentColor; } /* Firefox 19+ */
+  input:-moz-placeholder { color: currentColor; } /* Firefox 18- */
+  input:-ms-input-placeholder { color: currentColor; }
+
+  .app {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+  }
 </style>

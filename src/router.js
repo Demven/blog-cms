@@ -6,22 +6,25 @@ import clientStorage, { STORAGE_KEY } from './services/client-storage';
 import userService from './services/user-service';
 
 function protectRoute (optionalRedirect) {
-  return (to, from, next) => {
+  return (to) => {
     const token = clientStorage.get(STORAGE_KEY.AUTH_TOKEN);
+    const isLoginPage = to.path === '/login';
 
-    if (!token) return next();
+    if (isLoginPage) {
+      return true;
+    } else if (!token && !isLoginPage) {
+      return '/login';
+    }
 
     return userService.validateToken(token)
       .then(valid => {
-        if (!valid) {
-          next('/logout');
+        if (valid) {
+          return optionalRedirect || true;
+        } else {
+          return '/logout';
         }
-
-        next(optionalRedirect);
       })
-      .catch(() => {
-        next('/logout');
-      });
+      .catch(() => '/logout');
   };
 }
 
@@ -42,9 +45,9 @@ const router = createRouter({
     },
     {
       path: '/logout',
-      beforeEnter: (to, from, next) => {
+      beforeEnter: () => {
         userService.logout();
-        next('/login');
+        return '/login';
       },
     },
     {
@@ -75,10 +78,6 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  // const token = localStorage.getItem("token");
-  // if (!token && to.path !== '/login') next('/login');
-  // else next();
-
   document.title = to.meta.title || 'Dmitry Salnikov - Personal Blog';
 
   next();

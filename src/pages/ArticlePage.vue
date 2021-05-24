@@ -338,7 +338,7 @@
       onBodyContentUpdate ({ index, content }) {
         if (index && content) {
           this.article.body[+index] = content;
-          this.$set(this.body, +index, content);
+          this.body[+index] = content;
         }
       },
 
