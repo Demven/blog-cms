@@ -20,9 +20,7 @@
     "mitt": "^2.1.0",
     "moment": "^2.29.0",
     "vue": "^3.0.11",
-    "vue-router": "^4.0.0-0",
-    "vue-textarea-autosize": "^1.1.1",
-    "vuex": "^4.0.0"
+    "vue-router": "^4.0.0-0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.13",

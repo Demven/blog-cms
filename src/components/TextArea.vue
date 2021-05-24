@@ -8,8 +8,9 @@
       {{label}}
     </label>
 
-    <textarea-autosize
+    <textarea
       class="TextArea__field"
+      ref="textAreaElement"
       :id="name"
       :placeholder="placeholder"
       :rows="rows"
@@ -18,13 +19,14 @@
       @input="onInput"
       @blur="onBlur"
       v-model="value"
-    ></textarea-autosize>
+    ></textarea>
 
     <div class="TextArea__error">{{errorText}}</div>
   </div>
 </template>
 
 <script>
+  import { ref, onMounted } from 'vue';
   import classNames from 'classnames';
 
   export default {
@@ -48,6 +50,23 @@
         },
       };
     },
+    setup () {
+      const textAreaElement = ref(null);
+
+      function resize () {
+        textAreaElement.value.style.height = 'auto';
+        textAreaElement.value.style.height = `${textAreaElement.value.scrollHeight}px`;
+      }
+
+      onMounted(() => {
+        resize();
+      });
+
+      return {
+        textAreaElement,
+        resize,
+      };
+    },
     computed: {
       className () {
         return classNames('TextArea', {
@@ -57,10 +76,14 @@
     },
     methods: {
       onFocus (event) {
+        this.resize();
+
         this.$emit(this.EVENT.FOCUS, event);
       },
 
       onInput () {
+        this.resize();
+
         if (this.name) {
           this.$emit(this.EVENT.CHANGE, { name: this.name, value: this.value });
         }
