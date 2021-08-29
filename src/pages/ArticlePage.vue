@@ -11,8 +11,8 @@
       <div class="ArticlePage__input-field">
         <TextField
           :name="'title'"
-          :label="'Name'"
-          :placeholder="'User name'"
+          :label="'Headline'"
+          :placeholder="'Title'"
           :value="article.title"
           required
           @change="onFieldChange"
@@ -28,6 +28,7 @@
           required
           @change="onMainImageChange"
         ></TextField>
+
         <img
           class="ArticlePage__hero-image"
           :src="heroImageUrl"
@@ -107,7 +108,6 @@
 
 <script>
   import emitter from 'mitt';
-  import axios from 'axios';
   import SvgSprite from '../components/SvgSprite.vue';
   import Nav from '../components/Nav.vue';
   import Toast from '../components/Toast.vue';
@@ -121,6 +121,7 @@
   import ArticleBody from '../components/ArticleBody/ArticleBody';
   import { getCroppedImageUrl, ASPECT_RATIO } from '../services/images-service';
   import clientStorage, { STORAGE_KEY } from '../services/client-storage';
+  import { gqlQuery, gqlMutation, serializeGQLObject } from '../services/gql-service';
   import { uuid } from '../services/uuid-service';
   import { env } from '../env';
 
@@ -195,71 +196,107 @@
     },
     methods: {
       fetchArticle() {
-        return axios
-          .get(`${env.API_HOST}/v1/article/${this.slug}?ignore=pageview`)
-          .then(response => {
-            if (response.status === 200) {
-              this.article = response.data;
+        return gqlQuery(`
+          article (slug: "${this.slug}", ignorePageView: true) {
+            _id
+            slug
+            title
+            description
+            image {
+              _id
+              url
+              description
+              credits
+            }
+            category {
+              _id
+              title
+              slug
+              color
+            }
+            keywords {
+              _id
+              slug
+              name
+            }
+            body
+            deleted
+            publication_date
+            last_updated
+          }
+        `)
+          .then(data => {
+            if (data?.article) {
+              this.article = data.article;
               // each body node should have a unique id so that we could assign correct keys in v-for
               this.body = [...this.article.body].map(node => ({ ...node, id: uuid() }));
-
-              console.info('article data', this.article);
             } else {
-              console.error('Could not get article data', response);
+              console.error('Could not get article data', data);
               this.toastEventBus.emit('message', 'Could not get article data');
             }
           })
           .catch(error => {
             console.error(error);
+            this.toastEventBus.emit('message', 'Could not get article data');
           });
       },
 
       fetchCategories () {
-        return axios
-          .get(`${env.API_HOST}/v1/category`)
-          .then(response => {
-            if (response.status === 200) {
-              const categories = response.data;
-              this.categories = categories.map(category => ({
+        return gqlQuery(`
+          categories {
+            _id
+            title
+            slug
+            color
+          }
+        `)
+          .then(data => {
+            if (data?.categories?.length) {
+              this.categories = data.categories.map(category => ({
                 ...category,
                 text: category.title,
                 value: category.slug,
               }));
 
               if (this.createMode) {
-                this.article.category = categories[0];
+                this.article.category = data.categories[0];
               } else {
                 this.category = this.categories.findIndex(category => category.value === this.article.category.slug);
               }
             } else {
-              console.error('Could not get categories data', response);
+              console.error('Could not get categories data', data);
               this.toastEventBus.emit('message', 'Could not fetch existing categories');
             }
           })
           .catch(error => {
             console.error(error);
+            this.toastEventBus.emit('message', 'Could not fetch existing categories');
           });
       },
 
       fetchSuggestedKeywords (keywordFragment) {
-        return axios
-          .get(`${env.API_HOST}/v1/keyword?search=${encodeURIComponent(keywordFragment)}&limit=5`)
-          .then(response => {
-            if (response.status === 200) {
-              const keywords = response.data;
-
-              this.suggestedKeywords = keywords.map(keyword => ({
+        return gqlQuery(`
+          keywords (search: "${encodeURIComponent(keywordFragment)}", limit: 5) {
+            _id
+            name
+            slug
+          }
+        `)
+          .then(data => {
+            if (data?.keywords) {
+              this.suggestedKeywords = data.keywords.map(keyword => ({
                 ...keyword,
                 text: keyword.name,
                 value: keyword.slug,
               }));
             } else {
-              console.error('Could not get keywords data', response);
+              console.error('Could not get keywords data', data);
               this.toastEventBus.emit('message', 'Could not fetch suggested keywords');
             }
           })
           .catch(error => {
             console.error(error);
+            this.toastEventBus.emit('message', 'Could not fetch suggested keywords');
           });
       },
 
@@ -309,18 +346,19 @@
 
       onCreateKeyword({ name, value }) {
         if (name === 'keyword') {
-          const token = clientStorage.get(STORAGE_KEY.AUTH_TOKEN);
-          axios
-            .post(
-              `${env.API_HOST}/v1/keyword`,
-              { keyword: value },
-              { headers: { Authorization: `Bearer ${token}` } }
-            )
-            .then(response => {
-              if (response.status === 200) {
-                this.article.keywords.push(response.data);
+          gqlMutation(`
+            createKeyword (name: "${value}") {
+              _id
+              name
+              slug
+            }
+          `)
+            .then(data => {
+              if (data?.createKeyword) {
+                this.article.keywords.push(data.createKeyword);
                 this.keyword = '';
               } else {
+                console.error('Failed to create keyword', data);
                 this.toastEventBus.emit('message', 'Failed to create keyword');
               }
             })
@@ -355,27 +393,26 @@
       },
 
       onPublish () {
-        const token = clientStorage.get(STORAGE_KEY.AUTH_TOKEN);
+        const mutationName = this.createMode ? 'createArticle' : 'updateArticle';
 
-        axios.post(
-          `${env.API_HOST}/v1/article`,
-          this.article,
-          { headers: { Authorization: `Bearer ${token}` } }
-        )
-          .then(response => {
-            if (response.status === 200) {
-              console.info('successfully published', response.data);
+        gqlMutation(`
+          ${mutationName} (article: ${serializeGQLObject(this.article)}) {
+            slug
+          }
+        `)
+          .then(data => {
+            if (data && data[mutationName]) {
               this.toastEventBus.emit('message', 'Successfully published');
 
               if (this.createMode) {
-                const articleSlug = response.data.slug;
+                const articleSlug = data[mutationName].slug;
 
                 this.$router.push(`/article/${articleSlug}`);
               } else {
                 this.$router.push(`/article/${this.article.slug}`);
               }
             } else {
-              console.error('Failed to publish', response);
+              console.error('Failed to publish', data);
               this.toastEventBus.emit('message', 'Failed to publish the article');
             }
           })

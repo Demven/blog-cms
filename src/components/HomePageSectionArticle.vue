@@ -72,11 +72,10 @@
 
 <script>
   import classNames from 'classnames';
-  import axios from 'axios';
   import moment from 'moment';
   import AutoComplete from './AutoComplete';
-  import { env } from '../env';
   import { getCroppedImageUrl, ASPECT_RATIO } from '../services/images-service';
+  import { gqlQuery } from '../services/gql-service';
 
   // interface HomepageSectionArticle {
   //   _id: string;
@@ -160,18 +159,33 @@
       },
 
       fetchSuggestedArticles (titleInput) {
-        return axios
-          .get(`${env.API_HOST}/v1/category/${this.category.slug}/articles?title=${titleInput}&limit=5`)
-          .then(response => {
-            if (response.status === 200) {
-              this.processSuggestedArticles(response.data);
+        return gqlQuery(`
+          categoryArticles (categorySlug: "${this.category.slug}", articleTitleSearch: "${titleInput}", limit: 5) {
+            _id
+            slug
+            title
+            description
+            image {
+              url
+              description
+              credits
+            }
+            views {
+              count
+            }
+            deleted
+            last_updated
+            publication_date
+          }
+        `)
+          .then(data => {
+            if (data?.categoryArticles) {
+              this.processSuggestedArticles(data.categoryArticles);
             } else {
-              console.error('Could not get suggested articles', response);
+              console.error('Could not get suggested articles', data);
             }
           })
-          .catch(error => {
-            console.error(error);
-          });
+          .catch(console.error);
       },
 
       processSuggestedArticles (suggestedArticles) {

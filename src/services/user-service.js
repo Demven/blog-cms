@@ -1,4 +1,3 @@
-import axios from 'axios';
 import clientStorage, { STORAGE_KEY } from './client-storage';
 import { env } from '../env';
 
@@ -9,16 +8,27 @@ if (typeof window !== 'undefined') {
 }
 
 function login (name, password) {
-  return axios
-    .post(`${env.API_HOST}/v1/user/login`, { name, password })
-    .then(response => {
-      if (response.status === 200 && response.data.token) {
-        clientStorage.save(STORAGE_KEY.AUTH_TOKEN, response.data.token);
-
+  return fetch(`${env.API_HOST}/v1/user/login`, {
+    method: 'POST',
+    mode: 'cors',
+    cache: 'no-cache',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name,
+      password,
+    }),
+  })
+    .then(res => {
+      if (res.ok) return res.json();
+      throw new Error('Login attempt failed. Please check your email and password, and try again.');
+    })
+    .then((responseData) => {
+      if (responseData.token) {
+        clientStorage.save(STORAGE_KEY.AUTH_TOKEN, responseData.token);
         loggedIn = true;
       }
 
-      return response;
+      return responseData;
     });
 }
 
@@ -33,14 +43,15 @@ function isLoggedIn () {
 }
 
 function validateToken (token) {
-  return axios
-    .post(`${env.API_HOST}/v1/user/validate`, { token })
-    .then(response => {
-      return response.status === 200;
-    })
-    .catch(() => {
-      return false;
-    });
+  return fetch(`${env.API_HOST}/v1/user/validate`, {
+    method: 'POST',
+    mode: 'cors',
+    cache: 'no-cache',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token }),
+  })
+    .then(res => res.ok)
+    .catch(() => false);
 }
 
 export default {

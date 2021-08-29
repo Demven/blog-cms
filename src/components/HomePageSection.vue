@@ -42,8 +42,6 @@
     },
     methods: {
       onSectionArticleUpdate ({ index, article }) {
-        console.info('update article', index, article);
-
         if (article) {
           const updatedArticles = [...this.section.articles];
           updatedArticles[index] = article;
