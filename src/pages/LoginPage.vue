@@ -78,14 +78,15 @@
         userService
           .login(this.username, this.password)
           .then(response => {
-            if (response.status === 200) {
+            if (response) {
               this.$router.push('/homepage');
             } else {
-              this.toastEventBus.emit('message', response.data);
+              this.toastEventBus.emit('message', response);
             }
           })
           .catch(error => {
-            this.toastEventBus.emit('message', error.response.data);
+            console.error(error);
+            this.toastEventBus.emit('message', error.message);
           });
       },
 

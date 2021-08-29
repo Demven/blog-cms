@@ -21,7 +21,6 @@
 </template>
 
 <script>
-  import axios from 'axios';
   import emitter from 'mitt';
   import SvgSprite from '../components/SvgSprite.vue';
   import Nav from '../components/Nav.vue';
@@ -29,6 +28,7 @@
   import Toast from '../components/Toast.vue';
   import clientStorage, { STORAGE_KEY } from '../services/client-storage';
   import { env } from '../env';
+  import { gqlQuery, gqlMutation } from '../services/gql-service';
 
   // interface HomepageSection {
   //   _id: string;
@@ -62,21 +62,47 @@
     },
     methods: {
       fetchHomePageSections () {
-        return axios
-          .get(`${env.API_HOST}/v1/homepage-section`)
-          .then(response => {
-            if (response.status === 200) {
-              this.sections = response.data;
-              console.info('homepage data', this.sections);
-            } else {
-              console.error('Could not get homepage sections', response);
-              this.toastEventBus.emit('message', 'Could not get homepage data');
+        return gqlQuery(`
+          homepageSections {
+            _id
+            articles {
+              _id
+              title
+              slug
+              image {
+                url
+                description
+                credits
+              }
+              keywords {
+                slug
+              }
+              views {
+                count
+              }
+              publication_date
             }
-          })
-          .catch(error => {
-            console.error(error);
+            category {
+              title
+              slug
+              color
+            }
+            order
+          }
+        `)
+        .then(data => {
+          if (data && data.homepageSections) {
+            this.sections = data.homepageSections;
+            console.info('homepage data', this.sections);
+          } else {
+            console.error('Could not get homepage sections', data);
             this.toastEventBus.emit('message', 'Could not get homepage data');
-          });
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          this.toastEventBus.emit('message', 'Could not get homepage data');
+        });
       },
 
       onHomePageSectionUpdate ({ index, section }) {
@@ -90,33 +116,27 @@
       },
 
       onPublish () {
-        const token = clientStorage.get(STORAGE_KEY.AUTH_TOKEN);
-        const updateHomepageSectionsRequests = this.sections
-          .map((section) => {
-            return axios.post(
-              `${env.API_HOST}/v1/homepage-section`,
-              section,
-              {
-                headers: { Authorization: `Bearer ${token}` }
+        return Promise.all(
+          this.sections.map((section) => {
+            return gqlMutation(`
+              updateHomepageSection (
+                id: "${section._id}",
+                articleIds: [${section.articles.map(article => `"${article._id}"`).toString()}]
+              ) {
+                _id
               }
-            );
-          });
+            `)
+              .then(data => data?.updateHomepageSection);
+          })
+        )
+          .then(updatedSections => {
+            const allSuccessful = updatedSections.every(section => !!section._id);
 
-        return axios
-          .all(updateHomepageSectionsRequests)
-          .then(results => {
-            let isSuccessful = true;
-            results.forEach(sectionResult => {
-              if (sectionResult.status !== 200) {
-                isSuccessful = false;
-              }
-            });
-
-            if (isSuccessful) {
-              console.info('successfully published the Homepage', results);
+            if (allSuccessful) {
+              console.info('successfully published the Homepage', updatedSections);
               this.toastEventBus.emit('message', 'Successfully published');
             } else {
-              console.error('Failed to publish', results);
+              console.error('Failed to publish', updatedSections);
               this.toastEventBus.emit('message', 'Failed to publish the Homepage');
             }
           })

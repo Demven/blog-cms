@@ -65,7 +65,7 @@
   import Icon from '../Icon/Icon';
   import { ICON } from '../Icon/icons';
   import TextField from '../TextField';
-  import TextArea from "@/components/TextArea";
+  import TextArea from '../TextArea';
 
   // class EpigraphModel {
   //   type: string;
