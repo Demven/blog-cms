@@ -9,4 +9,5 @@ export const CONTENT_TYPE = {
   EMBED: 'embed',
   VIDEO: 'video',
   QUOTE: 'quote',
+  RECOMMENDATION: 'recommendation',
 };

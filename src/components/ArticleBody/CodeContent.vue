@@ -122,24 +122,22 @@
         codeHighlightService.renderCode();
       },
 
-      onCodeChange({ name, value }) {
+      onCodeChange ({ name, value }) {
         if (name && value) {
           this.currentCodeValue = value;
         }
       },
 
-      onCodeTypeChange({ name, selectedIndex }) {
-        if (name === 'type') {
-          this.selectedCodeTypeIndex = selectedIndex;
+      onCodeTypeChange (selectedIndex) {
+        this.selectedCodeTypeIndex = selectedIndex;
 
-          this.$emit(this.EVENT.UPDATE, {
-            index: this.index,
-            content: {
-              ...this.content,
-              codeType: this.CODE_TYPES[selectedIndex].value,
-            },
-          });
-        }
+        this.$emit(this.EVENT.UPDATE, {
+          index: this.index,
+          content: {
+            ...this.content,
+            codeType: this.CODE_TYPES[selectedIndex].value,
+          },
+        });
       },
 
       onEdit () {

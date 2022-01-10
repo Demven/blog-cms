@@ -31,6 +31,7 @@
   import EmbedContent from './EmbedContent';
   import VideoContent from './VideoContent';
   import QuoteContent from './QuoteContent';
+  import RecommendationContent from './RecommendationContent';
   import { CONTENT_TYPE } from './content-types';
 
   export default {
@@ -52,6 +53,7 @@
       EmbedContent,
       VideoContent,
       QuoteContent,
+      RecommendationContent,
     },
     data () {
       return {
@@ -86,6 +88,8 @@
             return 'VideoContent';
           case CONTENT_TYPE.QUOTE:
             return 'QuoteContent';
+          case CONTENT_TYPE.RECOMMENDATION:
+            return 'RecommendationContent';
           default:
             return '';
         }
@@ -112,16 +116,10 @@
 
   .ArticleBodyNode {
     &__before-node-container {
-      height: 40px;
+      min-height: 40px;
       display: flex;
       justify-content: center;
       align-items: center;
-      opacity: 0;
-      transition: opacity 0.4s;
-
-      &:hover {
-        opacity: 1;
-      }
     }
   }
 </style>

@@ -1,75 +1,18 @@
 <template>
   <div :class="className">
-    <ul class="InsertContent__content-types">
-      <li
-         class="InsertContent__content-type"
-         @click="onAddContent(CONTENT_TYPE.TEXT)"
-      >
-        Text
-      </li>
-
-      <li
-         class="InsertContent__content-type"
-         @click="onAddContent(CONTENT_TYPE.INLINE_IMAGE)"
-      >
-        Image
-      </li>
-
-      <li
-         class="InsertContent__content-type"
-         @click="onAddContent(CONTENT_TYPE.HEADING)"
-      >
-        Heading
-      </li>
-
-      <li
-         class="InsertContent__content-type"
-         @click="onAddContent(CONTENT_TYPE.EPIGRAPH)"
-      >
-        Epigraph
-      </li>
-
-      <li
-         class="InsertContent__content-type"
-         @click="onAddContent(CONTENT_TYPE.LIST, { listType: LIST_TYPE.BULLET })"
-      >
-        List
-      </li>
-
-      <li
-         class="InsertContent__content-type"
-         @click="onAddContent(CONTENT_TYPE.MATH)"
-      >
-        Math
-      </li>
-
-      <li
-         class="InsertContent__content-type"
-         @click="onAddContent(CONTENT_TYPE.CODE)"
-      >
-        Code
-      </li>
-
-      <li
-         class="InsertContent__content-type"
-         @click="onAddContent(CONTENT_TYPE.EMBED)"
-      >
-        Embed
-      </li>
-
-      <li
-         class="InsertContent__content-type"
-         @click="onAddContent(CONTENT_TYPE.VIDEO)"
-      >
-        Video
-      </li>
-
-      <li
-         class="InsertContent__content-type"
-         @click="onAddContent(CONTENT_TYPE.QUOTE)">
-        Quote
-      </li>
-    </ul>
+    <div
+      class="InsertContent__content-types"
+      v-if="contentTypesVisible"
+    >
+      <SelectField
+        class="InsertContent__content-type"
+        :name="'content-type'"
+        :label="'Select Content Type'"
+        :selectedIndex="selectedContentTypeIndex"
+        :values="contentTypes"
+        @select="onSelectContentType"
+      ></SelectField>
+    </div>
 
     <button
        class="InsertContent__add-button"
@@ -82,14 +25,15 @@
 
 <script>
   import classNames from 'classnames';
+  import SelectField from '../components/SelectField';
   import Icon from './Icon/Icon';
   import { ICON } from './Icon/icons';
   import { CONTENT_TYPE } from './ArticleBody/content-types';
-  import { LIST_TYPE } from './ArticleBody/list-types';
+  import { uuid } from '../services/uuid-service';
 
   export default {
     name: 'InsertContent',
-    components: { Icon },
+    components: { Icon, SelectField },
     props: {
       index: Number,
       small: Boolean,
@@ -97,11 +41,24 @@
     data () {
       return {
         contentTypesVisible: false,
+        selectedContentTypeIndex: 0,
+        contentTypes: [
+          { text: 'Text', value: CONTENT_TYPE.TEXT },
+          { text: 'Image', value: CONTENT_TYPE.INLINE_IMAGE },
+          { text: 'Heading', value: CONTENT_TYPE.HEADING },
+          { text: 'Epigraph', value: CONTENT_TYPE.EPIGRAPH },
+          { text: 'List', value: CONTENT_TYPE.LIST },
+          { text: 'Math', value: CONTENT_TYPE.MATH },
+          { text: 'Code', value: CONTENT_TYPE.CODE },
+          { text: 'Embed', value: CONTENT_TYPE.EMBED },
+          { text: 'Video', value: CONTENT_TYPE.VIDEO },
+          { text: 'Quote', value: CONTENT_TYPE.QUOTE },
+          { text: 'Recommendation', value: CONTENT_TYPE.RECOMMENDATION },
+        ],
         EVENT: {
           ADD_CONTENT: 'add-content',
         },
         CONTENT_TYPE,
-        LIST_TYPE,
         ICON_ADD: ICON.ADD,
       };
     },
@@ -122,12 +79,19 @@
         this.contentTypesVisible = false;
       },
 
-      onAddContent (contentType, additionalData = {}) {
-        this.contentTypesVisible = false;
+      onSelectContentType (contentTypeIndex) {
+        const selectedContentType = this.contentTypes[contentTypeIndex];
 
-        const bodyNode = { type: contentType, ...additionalData };
-        this.$emit(this.EVENT.ADD_CONTENT, { index: this.index, bodyNode });
-      }
+        if (selectedContentType) {
+          this.contentTypesVisible = false;
+
+          const bodyNode = {
+            id: uuid(),
+            type: selectedContentType.value,
+          };
+          this.$emit(this.EVENT.ADD_CONTENT, { index: this.index, bodyNode });
+        }
+      },
     },
   };
 </script>
@@ -146,10 +110,20 @@
     justify-content: center;
     margin-top: 60px;
     margin-right: 80px;
+    opacity: 0;
+    transition: opacity 0.4s;
+
+    &:hover {
+      opacity: 1;
+    }
     
     &--small {
       height: 40px;
       margin-top: 0;
+    }
+    &--content-types-visible {
+      height: 84px;
+      opacity: 1;
     }
 
     &__content-types {
@@ -159,14 +133,13 @@
       display: flex;
       align-items: center;
       box-sizing: border-box;
-      overflow: hidden;
       font-family: $font-dincyr-bold;
       font-size: 16px;
       color: $color-black-medium;
       transition: width 0.3s;
 
       .#{$componentName}--content-types-visible & {
-        width: 569px;
+        width: 386px;
       }
       
       .#{$componentName}--small & {
@@ -175,12 +148,8 @@
     }
 
     &__content-type {
-      margin-right: 15px;
+      margin: 0 auto;
       cursor: pointer;
-
-      &:hover {
-        text-decoration: underline;
-      }
     }
 
     &__add-button {
@@ -212,6 +181,7 @@
       }
 
       .#{$componentName}--content-types-visible & {
+        margin-top: 10px;
         transform: rotate(45deg);
       }
 
