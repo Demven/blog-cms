@@ -158,21 +158,19 @@
       }
     },
     methods: {
-      onVideoTypeChange({ name, selectedIndex }) {
-        if (name === 'type') {
-          this.selectedVideoTypeIndex = selectedIndex;
+      onVideoTypeChange (selectedIndex) {
+        this.selectedVideoTypeIndex = selectedIndex;
 
-          this.$emit(this.EVENT.UPDATE, {
-            index: this.index,
-            content: {
-              ...this.content,
-              videoType: this.VIDEO_TYPES[selectedIndex].value,
-            },
-          });
-        }
+        this.$emit(this.EVENT.UPDATE, {
+          index: this.index,
+          content: {
+            ...this.content,
+            videoType: this.VIDEO_TYPES[selectedIndex].value,
+          },
+        });
       },
 
-      onVideoChange({ name, value }) {
+      onVideoChange ({ name, value }) {
         if (name && value) {
           this.currentVideoValue = value;
         }

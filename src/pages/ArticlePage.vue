@@ -53,7 +53,7 @@
         <SelectField
           :name="'category'"
           :label="'Category'"
-          :selectedIndex="category"
+          :selectedIndex="categoryIndex"
           :values="categories"
           @select="onCategoryChange"
         ></SelectField>
@@ -169,7 +169,7 @@
         article: DEFAULT_ARTICLE,
         body: [],
         categories: [],
-        category: 0,
+        categoryIndex: 0,
         keyword: '',
         suggestedKeywords: [],
         createMode: false,
@@ -261,7 +261,7 @@
               if (this.createMode) {
                 this.article.category = data.categories[0];
               } else {
-                this.category = this.categories.findIndex(category => category.value === this.article.category.slug);
+                this.categoryIndex = this.categories.findIndex(category => category.value === this.article.category.slug);
               }
             } else {
               console.error('Could not get categories data', data);
@@ -312,15 +312,13 @@
         }
       },
 
-      onCategoryChange ({ name, selectedIndex }) {
-        if (name) {
-          this.category = Number(selectedIndex);
-          this.article.category = {
-            ...this.categories[selectedIndex],
-            text: undefined,
-            value: undefined,
-          };
-        }
+      onCategoryChange (selectedIndex) {
+        this.categoryIndex = Number(selectedIndex);
+        this.article.category = {
+          ...this.categories[selectedIndex],
+          text: undefined,
+          value: undefined,
+        };
       },
 
       onKeywordChange({ name, value }) {
@@ -388,8 +386,13 @@
       },
 
       onAddContent ({ index, bodyNode }) {
-        this.article.body.splice(index, 0, bodyNode); // insert bodyNode at certain position
-        this.body.splice(index, 0, { ...bodyNode, id: uuid() }); // add unique id to the new node
+        const bodyNodeWithCategory = {
+          ...bodyNode,
+          category: this.article.category,
+        };
+
+        this.article.body.splice(index, 0, bodyNodeWithCategory); // insert bodyNode at certain position
+        this.body.splice(index, 0, { ...bodyNodeWithCategory }); // add unique id to the new node
       },
 
       onPublish () {

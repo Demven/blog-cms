@@ -83,7 +83,7 @@
       onSelect (event) {
         const selectedIndex = event.target.dataset.index;
 
-        this.$emit(this.EVENT.SELECT, { name: this.name, selectedIndex });
+        this.$emit(this.EVENT.SELECT, selectedIndex);
 
         this.closeList();
       },
