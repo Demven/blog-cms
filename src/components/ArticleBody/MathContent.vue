@@ -105,7 +105,10 @@
         if (this.currentValue && this.currentValue.length > 0) {
           this.$emit(this.EVENT.UPDATE, {
             index: this.index,
-            content: { ...this.content, equation: this.currentValue },
+            content: {
+              ...this.content,
+              equation: this.currentValue,
+            },
           });
         } else if (!this.content.equation) {
           this.onDelete();

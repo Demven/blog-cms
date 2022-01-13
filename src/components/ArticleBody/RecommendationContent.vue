@@ -95,7 +95,7 @@
   // class RecommendationModel {
   //   type: string;
   //   recommendationType: string;
-  //   parameters: object;
+  //   category: string;
   // }
 
   export default {
@@ -136,6 +136,7 @@
         this.editMode = true;
       } else {
         this.selectedRecommendationTypeIndex = this.RECOMMENDATION_TYPES.findIndex(type => type.value === this.content.recommendationType);
+        this.fetchRecommendations();
       }
     },
     methods: {
@@ -168,9 +169,7 @@
             content: {
               ...this.content,
               recommendationType: this.content.recommendationType || this.RECOMMENDATION_TYPES[this.selectedRecommendationTypeIndex].value,
-              parameters: {
-                category: this.content.category.slug,
-              },
+              // category: object added in ArticlePage in onAddContent()
             },
           });
 
@@ -235,19 +234,6 @@
 
     &__content {
       position: relative;
-    }
-
-    &__code-type {
-      position: absolute;
-      left: 20px;
-      top: 20px;
-      padding: 5px 10px;
-      background: $color-dark-grey;
-      border-radius: 3px;
-      font-family: $font-dincyr-regular;
-      font-size: 16px;
-      color: $color-white;
-      z-index: 10;
     }
 
     &__preview {

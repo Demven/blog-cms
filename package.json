@@ -1,6 +1,6 @@
 {
   "name": "blog-cms",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "private": true,
   "scripts": {
     "build": "npm run generate:env-vars && vue-cli-service build",
