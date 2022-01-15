@@ -185,7 +185,11 @@
 
       fetchRecommendations () {
         return gqlQuery(`
-          mostPopularInCategory (categorySlug: "${this.content.category.slug}", limit:3) {
+          mostPopularInCategory (
+            categorySlug: "${this.content.category.slug}",
+            excludeSlug: null,
+            limit:3
+          ) {
             _id
             slug
             title
